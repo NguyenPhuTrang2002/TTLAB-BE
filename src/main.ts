@@ -81,3 +81,4 @@ async function bootstrap() {
     await app.listen(configService.get(ConfigKey.PORT));
 }
 bootstrap();
+export { bootstrap };
