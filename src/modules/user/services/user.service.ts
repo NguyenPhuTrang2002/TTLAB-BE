@@ -73,4 +73,7 @@ export class UserService extends BaseService<User, UserRepository> {
             throw error;
         }
     }
+    async findUserByEmail(email: string): Promise<User | undefined> {
+        return this.userRepository.findOneByCondition({ email });
+    }
 }

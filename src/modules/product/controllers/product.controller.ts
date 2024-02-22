@@ -13,81 +13,78 @@ import {
     ErrorResponse,
     SuccessResponse,
 } from '../../../common/helpers/response';
-import { HttpStatus, mongoIdSchema } from '../../../common/constants';
-import {
-    CreateUserDto,
-    GetUserListQuery,
-    UpdateUserDto,
-} from '../user.interface';
 import {
     ApiResponseError,
     SwaggerApiType,
     ApiResponseSuccess,
 } from '../../../common/services/swagger.service';
-
+import { HttpStatus, mongoIdSchema } from '../../../common/constants';
 import { ApiOperation, ApiBody, ApiTags } from '@nestjs/swagger';
-
-import {
-    createUserSuccessResponseExample,
-    deleteUserSuccessResponseExample,
-    getUserDetailSuccessResponseExample,
-    getUserListSuccessResponseExample,
-    updateUserSuccessResponseExample,
-} from '../user.swagger';
 import { TrimBodyPipe } from '../../../common/pipe/trim.body.pipe';
 import { toObjectId } from '../../../common/helpers/commonFunctions';
 import { BaseController } from '../../../common/base/base.controller';
 import { JoiValidationPipe } from '../../../common/pipe/joi.validation.pipe';
-import { UserService } from '../services/user.service';
+import { ProductService } from '../services/product.service';
+import {
+    createProductSuccessResponseExample,
+    deleteProductSuccessResponseExample,
+    getProductDetailSuccessResponseExample,
+    updateProductSuccessResponseExample,
+} from '../product.swagger';
+import {
+    CreateProductDto,
+    GetProductListQuery,
+    UpdateProductDto,
+} from '../product.interface';
 import { AuthGuard } from '../../../auth/auth.guard';
-@ApiTags('User APIs')
-@Controller('user')
-export class UserController extends BaseController {
-    constructor(private readonly userService: UserService) {
+@ApiTags('Product APIs')
+@Controller('product')
+export class ProductController extends BaseController {
+    constructor(private readonly productService: ProductService) {
         super();
     }
-
-    @ApiOperation({ summary: 'Create User' })
+    @ApiOperation({ summary: 'Create Product' })
     @ApiResponseError([SwaggerApiType.CREATE])
-    @ApiResponseSuccess(createUserSuccessResponseExample)
-    @ApiBody({ type: CreateUserDto })
+    @ApiResponseSuccess(createProductSuccessResponseExample)
+    @ApiBody({ type: CreateProductDto })
     @Post()
-    async createUser(
+    async createProduct(
         @Body(new TrimBodyPipe(), new JoiValidationPipe())
-        dto: CreateUserDto,
+        dto: CreateProductDto,
     ) {
         try {
-            const result = await this.userService.createUser(dto);
+            const result = await this.productService.createProduct(dto);
             return new SuccessResponse(result);
         } catch (error) {
             this.handleError(error);
         }
     }
 
-    @ApiOperation({ summary: 'Update wUser by id' })
+    @ApiOperation({ summary: 'Update Product by id' })
     @ApiResponseError([SwaggerApiType.UPDATE])
-    @ApiResponseSuccess(updateUserSuccessResponseExample)
-    @ApiBody({ type: UpdateUserDto })
+    @ApiResponseSuccess(updateProductSuccessResponseExample)
+    @ApiBody({ type: UpdateProductDto })
     @Patch(':id')
-    async updateUser(
+    async updateProduct(
         @Param('id', new JoiValidationPipe(mongoIdSchema)) id: string,
         @Body(new TrimBodyPipe(), new JoiValidationPipe())
-        dto: UpdateUserDto,
+        dto: UpdateProductDto,
     ) {
         try {
-            const user = await this.userService.findUserById(toObjectId(id));
-            if (!user) {
+            const product = await this.productService.findProductById(
+                toObjectId(id),
+            );
+            if (!product) {
                 return new ErrorResponse(
                     HttpStatus.ITEM_NOT_FOUND,
-                    this.translate('user.error.notFound', {
+                    this.translate('product.error.notFound', {
                         args: {
                             id,
                         },
                     }),
                 );
             }
-
-            const result = await this.userService.updateUser(
+            const result = await this.productService.updateProduct(
                 toObjectId(id),
                 dto,
             );
@@ -97,73 +94,75 @@ export class UserController extends BaseController {
         }
     }
 
-    @ApiOperation({ summary: 'Delete User by id' })
+    @ApiOperation({ summary: 'Delete Product by id' })
     @ApiResponseError([SwaggerApiType.DELETE])
-    @ApiResponseSuccess(deleteUserSuccessResponseExample)
+    @ApiResponseSuccess(deleteProductSuccessResponseExample)
     @Delete(':id')
-    async deleteUser(
+    async deleteProduct(
         @Param('id', new JoiValidationPipe(mongoIdSchema)) id: string,
     ) {
         try {
-            const user = await this.userService.findUserById(toObjectId(id));
-
-            if (!user) {
+            const product = await this.productService.findProductById(
+                toObjectId(id),
+            );
+            if (!product) {
                 return new ErrorResponse(
                     HttpStatus.ITEM_NOT_FOUND,
-                    this.translate('user.error.notFound', {
+                    this.translate('product.error.notFound', {
                         args: {
                             id,
                         },
                     }),
                 );
             }
-
-            const result = await this.userService.deleteUser(toObjectId(id));
+            const result = await this.productService.deleteProduct(
+                toObjectId(id),
+            );
             return new SuccessResponse(result);
         } catch (error) {
             this.handleError(error);
         }
     }
 
-    @UseGuards(AuthGuard)
-    @ApiOperation({ summary: 'Get User detail by id' })
+    @ApiOperation({ summary: 'Get Product detail by id' })
     @ApiResponseError([SwaggerApiType.GET_DETAIL])
-    @ApiResponseSuccess(getUserDetailSuccessResponseExample)
+    @ApiResponseSuccess(getProductDetailSuccessResponseExample)
     @Get(':id')
-    async getUserDetail(
+    async getProductDetail(
         @Param('id', new JoiValidationPipe(mongoIdSchema)) id: string,
     ) {
         try {
-            const result = await this.userService.findUserById(toObjectId(id));
-
-            if (!result) {
+            const product = await this.productService.findProductById(
+                toObjectId(id),
+            );
+            if (!product) {
                 return new ErrorResponse(
                     HttpStatus.ITEM_NOT_FOUND,
-                    this.translate('user.error.notFound', {
+                    this.translate('product.error.notFound', {
                         args: {
                             id,
                         },
                     }),
                 );
             }
-            return new SuccessResponse(result);
+            return new SuccessResponse(product);
         } catch (error) {
             this.handleError(error);
         }
     }
 
     @UseGuards(AuthGuard)
-    @ApiOperation({ summary: 'Get User list' })
+    @ApiOperation({ summary: 'Get Product list' })
     @ApiResponseError([SwaggerApiType.GET_LIST])
-    @ApiResponseSuccess(getUserListSuccessResponseExample)
+    @ApiResponseSuccess(getProductDetailSuccessResponseExample)
     @Get()
-    async getUserList(
+    async getProductList(
         @Query(new JoiValidationPipe())
-        query: GetUserListQuery,
+        query: GetProductListQuery,
     ) {
         try {
             const result =
-                await this.userService.findAllAndCountUserByQuery(query);
+                await this.productService.findAllAndCountProductByQuery(query);
             return new SuccessResponse(result);
         } catch (error) {
             this.handleError(error);

@@ -9,7 +9,12 @@ export enum UserOrderBy {
 export const UserAttributesForList: (keyof User)[] = [
     '_id',
     'id',
+    'avatar',
     'name',
+    'email',
+    'password',
+    'birthday',
+    'phone',
     'createdAt',
     'updatedAt',
 ];

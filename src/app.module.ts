@@ -10,6 +10,9 @@ import { CommonModule } from './modules/common/common.module';
 import { UserModule } from './modules/user/user.module';
 import { TransformInterceptor } from './modules/common/transform.interceptor';
 import { HeaderMiddleware } from './modules/middleware/header.middleware';
+import { ProductModule } from './modules/product/product.module';
+import { AuthModule } from './auth/auth.module';
+
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -21,6 +24,8 @@ import { HeaderMiddleware } from './modules/middleware/header.middleware';
         I18nModule,
         MongoModule,
         UserModule,
+        ProductModule,
+        AuthModule,
     ],
     controllers: [AppController],
     providers: [

@@ -36,6 +36,8 @@ export const getUserListSuccessResponseExample = {
             updatedAt: '2024-01-10T10:47:59.566Z',
             name: 'new name',
             id: '659e7592b3b56d0946b3c7b5',
+            email: 'abc@example.com',
+            password: 'password@a',
         },
     ],
 };

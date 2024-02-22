@@ -1,10 +1,9 @@
 import { BaseRepository } from '../../common/base/base.repository';
-import { User, UserDocument } from '../../database/schemas/user.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
-import { GetUserListQuery } from './user.interface';
+
 import {
     DEFAULT_FIRST_PAGE,
     DEFAULT_LIMIT_FOR_PAGINATION,
@@ -14,47 +13,22 @@ import {
     softDeleteCondition,
 } from '../../common/constants';
 import { parseMongoProjection } from '../../common/helpers/commonFunctions';
-import { UserAttributesForList } from './user.constant';
+import {
+    Product,
+    ProductDocument,
+} from '../../database/schemas/product.schema';
+import { GetProductListQuery } from './product.interface';
+import { ProductAttributesForList } from './product.constant';
 
 @Injectable()
-export class UserRepository extends BaseRepository<User> {
+export class ProductRepository extends BaseRepository<Product> {
     constructor(
-        @InjectModel(User.name)
-        private readonly userModel: Model<UserDocument>,
+        @InjectModel(Product.name)
+        private readonly productModel: Model<ProductDocument>,
     ) {
-        super(userModel);
+        super(productModel);
     }
-    async findOneByCondition(
-        condition: Record<string, any>,
-    ): Promise<User | null> {
-        try {
-            const user = await this.userModel.findOne(condition);
-            return user ? user : null;
-        } catch (error) {
-            this.logger.error('error: ', error);
-            throw error;
-        }
-    }
-    async findOneBy(condition: Partial<User>): Promise<User | null> {
-        try {
-            const user = await this.userModel.findOne(condition);
-            return user || null;
-        } catch (error) {
-            this.logger.error('Error in UserRepository findOneBy: ' + error);
-            throw error;
-        }
-    }
-
-    async update(email: string, refresh_Token: string): Promise<void> {
-        try {
-            await this.userModel.updateOne({ email }, { refresh_Token });
-        } catch (error) {
-            this.logger.error('error: ', error);
-            throw error;
-        }
-    }
-
-    async findAllAndCountUserByQuery(query: GetUserListQuery) {
+    async findAllAndCountProductByQuery(query: GetProductListQuery) {
         try {
             const {
                 keyword = '',
@@ -64,27 +38,23 @@ export class UserRepository extends BaseRepository<User> {
                 orderDirection = DEFAULT_ORDER_DIRECTION,
                 name = '',
             } = query;
-
-            const matchQuery: FilterQuery<User> = {};
+            const matchQuery: FilterQuery<Product> = {};
             matchQuery.$and = [
                 {
                     ...softDeleteCondition,
                 },
             ];
-
             if (keyword) {
                 matchQuery.$and.push({
                     name: { $regex: `.*${keyword}.*`, $options: 'i' },
                 });
             }
-
             if (name) {
                 matchQuery.$and.push({
                     name,
                 });
             }
-
-            const [result] = await this.userModel.aggregate([
+            const [result] = await this.productModel.aggregate([
                 {
                     $addFields: {
                         id: { $toString: '$_id' },
@@ -96,7 +66,7 @@ export class UserRepository extends BaseRepository<User> {
                     },
                 },
                 {
-                    $project: parseMongoProjection(UserAttributesForList),
+                    $project: parseMongoProjection(ProductAttributesForList),
                 },
                 {
                     $facet: {
@@ -130,7 +100,8 @@ export class UserRepository extends BaseRepository<User> {
             };
         } catch (error) {
             this.logger.error(
-                'Error in UserRepository findAllAndCountUserByQuery: ' + error,
+                'Error in ProductRepository findAllAndCountProductByQuery:' +
+                    error,
             );
             throw error;
         }

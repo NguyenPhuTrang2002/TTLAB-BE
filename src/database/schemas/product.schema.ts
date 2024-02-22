@@ -2,10 +2,10 @@ import { Prop, Schema } from '@nestjs/mongoose';
 import { MongoBaseSchema } from './base.schema';
 import { MongoCollection } from '../utils/constants';
 import { createSchemaForClass } from '../utils/helper';
-export type UserDocument = SchemaDocument<User>;
+export type ProductDocument = SchemaDocument<Product>;
 @Schema({
     timestamps: true,
-    collection: MongoCollection.USERS,
+    collection: MongoCollection.PRODUCTS,
     toJSON: {
         virtuals: true,
     },
@@ -13,23 +13,19 @@ export type UserDocument = SchemaDocument<User>;
         virtuals: true,
     },
 })
-export class User extends MongoBaseSchema {
-    @Prop({ required: true, type: String })
-    avatar: string;
+export class Product extends MongoBaseSchema {
     @Prop({ required: true, type: String })
     name: string;
     @Prop({ required: true, type: String })
-    email: string;
+    price: string;
     @Prop({ required: true, type: String })
-    password: string;
+    quantity: string;
     @Prop({ required: true, type: String })
-    birthday: string;
+    description: string;
     @Prop({ required: true, type: String })
-    phone: string;
-    @Prop({ required: true, type: String, nullable: true, default: null })
-    refresh_Token: string;
+    image: string;
 }
 
-const UserSchema = createSchemaForClass(User);
+const ProductSchema = createSchemaForClass(Product);
 
-export { UserSchema };
+export { ProductSchema };
