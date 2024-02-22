@@ -64,7 +64,7 @@ export class AuthService {
             });
 
             if (checkExistToken) {
-                return this.re_refreshToken({
+                return this.generateToken({
                     id: verify.id,
                     email: verify.email,
                 });
@@ -84,26 +84,20 @@ export class AuthService {
 
     private async generateToken(payload: { id: string; email: string }) {
         const access_Token = await this.jwtService.signAsync(payload);
+        const time_Token = this.configService.get<string>(
+            'EXP_IN_ACCESS_TOKEN',
+        );
         const refresh_Token = await this.jwtService.signAsync(payload, {
             secret: this.configService.get<string>('SECRET'),
             expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN'),
         });
         await this.userRepository.update(payload.email, refresh_Token);
-        // return {
-        //   code: HttpStatus.OK,
-        //   message: 'Login successful',
-        //   data: {
-        //     access_Token,
-        //     refresh_Token
-        //   },
-        //   version: 1
-        // };
 
-        return new SuccessResponse({ access_Token, refresh_Token });
+        return new SuccessResponse({ access_Token, refresh_Token, time_Token });
     }
 
-    private async re_refreshToken(payload: { id: string; email: string }) {
-        const access_Token = await this.jwtService.signAsync(payload);
-        return new SuccessResponse({ access_Token });
-    }
+    // private async re_refreshToken(payload: { id: string; email: string }) {
+    //   const access_Token = await this.jwtService.signAsync(payload);
+    //   return new SuccessResponse({ access_Token });
+    // }
 }
