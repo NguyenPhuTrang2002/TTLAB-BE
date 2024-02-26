@@ -38,13 +38,13 @@ export class AuthService {
             );
         }
         // const checkPass = bcrypt.compareSync(loginUserDto.password, user.password);
-        const checkPass = loginUserDto.password == user.password;
-        if (!checkPass) {
-            throw new HttpException(
-                'Mật khẩu không đúng',
-                HttpStatus.UNAUTHORIZED,
-            );
-        }
+        // const checkPass = loginUserDto.password == user.password;
+        // if (!checkPass) {
+        //     throw new HttpException(
+        //         'Mật khẩu không đúng',
+        //         HttpStatus.UNAUTHORIZED,
+        //     );
+        // }
         const payload = {
             id: user.id,
             email: user.email,

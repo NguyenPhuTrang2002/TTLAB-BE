@@ -20,13 +20,13 @@ export class User extends MongoBaseSchema {
     name: string;
     @Prop({ required: true, type: String })
     email: string;
-    @Prop({ required: true, type: String })
+    @Prop({ required: false, type: String, defaultValue: '' })
     password: string;
     @Prop({ required: true, type: String })
     birthday: string;
     @Prop({ required: true, type: String })
     phone: string;
-    @Prop({ required: true, type: String, nullable: true, default: null })
+    @Prop({ required: false, type: String, nullable: true, default: null })
     refresh_Token: string;
 }
 

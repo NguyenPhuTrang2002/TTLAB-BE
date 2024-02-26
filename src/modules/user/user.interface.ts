@@ -29,15 +29,6 @@ export class CreateUserDto {
     })
     @JoiValidate(Joi.string().trim().max(INPUT_TEXT_MAX_LENGTH).required())
     email: string;
-
-    @ApiProperty({
-        type: String,
-        maxLength: INPUT_TEXT_MAX_LENGTH,
-        default: 'password',
-    })
-    @JoiValidate(Joi.string().trim().max(INPUT_TEXT_MAX_LENGTH).required())
-    password: string;
-
     @ApiProperty({
         type: String,
         maxLength: INPUT_TEXT_MAX_LENGTH,
@@ -53,14 +44,6 @@ export class CreateUserDto {
     })
     @JoiValidate(Joi.string().trim().max(INPUT_TEXT_MAX_LENGTH).required())
     phone: string;
-
-    @ApiPropertyOptional({
-        type: String,
-        maxLength: INPUT_TEXT_MAX_LENGTH,
-        default: null,
-    })
-    @JoiValidate(Joi.string().trim().max(INPUT_TEXT_MAX_LENGTH).optional())
-    refresh_Token: string;
 }
 
 export class UpdateUserDto {
