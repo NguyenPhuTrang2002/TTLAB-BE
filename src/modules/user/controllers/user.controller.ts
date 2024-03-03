@@ -8,6 +8,7 @@ import {
     Get,
     Query,
     UseGuards,
+    HttpException,
 } from '@nestjs/common';
 import {
     ErrorResponse,
@@ -57,6 +58,18 @@ export class UserController extends BaseController {
         dto: CreateUserDto,
     ) {
         try {
+            const existingUser = await this.userService.findUserByEmail(
+                dto.email,
+            );
+            if (existingUser) {
+                throw new HttpException(
+                    {
+                        status: HttpStatus.BAD_REQUEST,
+                        error: 'Email already exists',
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
             const result = await this.userService.createUser(dto);
             return new SuccessResponse(result);
         } catch (error) {
@@ -64,7 +77,7 @@ export class UserController extends BaseController {
         }
     }
 
-    @ApiOperation({ summary: 'Update wUser by id' })
+    @ApiOperation({ summary: 'Update User by id' })
     @ApiResponseError([SwaggerApiType.UPDATE])
     @ApiResponseSuccess(updateUserSuccessResponseExample)
     @ApiBody({ type: UpdateUserDto })

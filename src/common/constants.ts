@@ -40,10 +40,10 @@ export const MAX_PAGE = 10000; // max page value
 
 export const INPUT_TEXT_MAX_LENGTH = 255;
 export const FIREBASE_TOKEN_MAX_LENGTH = 2000;
-export const URL_MAX_LENGTH = 2048;
+export const URL_MAX_LENGTH = 1000;
 export const TEXTAREA_MAX_LENGTH = 2000;
 export const ARRAY_MAX_LENGTH = 500;
-export const INPUT_PHONE_MAX_LENGTH = 15;
+export const INPUT_PHONE_MAX_LENGTH = 10;
 export const MAX_INTEGER = 2147483647;
 export const PASSWORD_MIN_LENGTH = 6;
 export const MIN_PRICE = 0;

@@ -1,7 +1,7 @@
 import { BaseRepository } from '../../common/base/base.repository';
 import { User, UserDocument } from '../../database/schemas/user.schema';
 
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import { GetUserListQuery } from './user.interface';
@@ -63,6 +63,8 @@ export class UserRepository extends BaseRepository<User> {
                 orderBy = DEFAULT_ORDER_BY,
                 orderDirection = DEFAULT_ORDER_DIRECTION,
                 name = '',
+                role = 'user',
+                email = '',
             } = query;
 
             const matchQuery: FilterQuery<User> = {};
@@ -82,6 +84,28 @@ export class UserRepository extends BaseRepository<User> {
                 matchQuery.$and.push({
                     name,
                 });
+            }
+            if (role) {
+                matchQuery.$and.push({
+                    role,
+                });
+            }
+            if (email) {
+                const existingUserCount = await this.userModel.countDocuments({
+                    email,
+                });
+                console.log('existingUserCount:', existingUserCount);
+                if (existingUserCount > 0) {
+                    const errorMessage = 'Email already exists: ' + email;
+                    this.logger.error(errorMessage);
+                    throw new HttpException(
+                        {
+                            status: HttpStatus.BAD_REQUEST,
+                            error: 'Email already exists',
+                        },
+                        HttpStatus.BAD_REQUEST,
+                    );
+                }
             }
 
             const [result] = await this.userModel.aggregate([

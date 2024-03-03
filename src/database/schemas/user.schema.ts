@@ -26,6 +26,8 @@ export class User extends MongoBaseSchema {
     birthday: string;
     @Prop({ required: true, type: String })
     phone: string;
+    @Prop({ required: false, type: String, default: 'user' })
+    role: string;
     @Prop({ required: false, type: String, nullable: true, default: null })
     refresh_Token: string;
 }

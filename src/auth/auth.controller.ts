@@ -13,6 +13,7 @@ import { SuccessResponse } from '../common/helpers/response';
 import { ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
+import { LoginAminDto } from './dto/login-admin.dto';
 
 @ApiTags('Auth Apis')
 @Controller('auth')
@@ -48,13 +49,27 @@ export class AuthController {
         return hashedPassword;
     }
 
+    @Post('loginAdmin')
+    @UsePipes(ValidationPipe)
+    loginAdmin(@Body() loginAdminDto: LoginAminDto): Promise<any> {
+        console.log(loginAdminDto);
+        return this.authService.loginAdmin(loginAdminDto);
+    }
+
     @Post('login')
     @UsePipes(ValidationPipe)
     login(@Body() loginUserDto: LoginUserDto): Promise<any> {
-        // console.log("Login api");
         console.log(loginUserDto);
         return this.authService.login(loginUserDto);
     }
+
+    @Post('profile')
+    async profile(
+        @Body() access_token: { access_token: string },
+    ): Promise<any> {
+        return this.authService.profile(access_token);
+    }
+
     @Post('refresh-token')
     refeshToken(@Body() { refresh_Token }): Promise<any> {
         return this.authService.refreshToken(refresh_Token);
