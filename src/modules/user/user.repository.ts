@@ -24,12 +24,22 @@ export class UserRepository extends BaseRepository<User> {
     ) {
         super(userModel);
     }
+    async checkUser(condition: Partial<User>): Promise<User | null> {
+        try {
+            const user = await this.userModel.findOne(condition);
+            return user || null;
+        } catch (error) {
+            this.logger.error('error: ', error);
+            throw error;
+        }
+    }
+
     async findOneByCondition(
         condition: Record<string, any>,
     ): Promise<User | null> {
         try {
             const user = await this.userModel.findOne(condition);
-            return user ? user : null;
+            return user || null;
         } catch (error) {
             this.logger.error('error: ', error);
             throw error;

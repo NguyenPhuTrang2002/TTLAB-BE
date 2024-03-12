@@ -19,13 +19,30 @@ export class AuthService {
 
     async register(registerUserDto: RegisterUserDto): Promise<User> {
         try {
+            const existingUser = await this.userRepository.checkUser({
+                email: registerUserDto.email,
+                deletedAt: null,
+            });
+            if (existingUser) {
+                throw new HttpException(
+                    {
+                        status: HttpStatus.BAD_REQUEST,
+                        error: 'Email already exists',
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+
             const user: SchemaCreateDocument<User> = {
                 ...(registerUserDto as any),
             };
+
             return await this.userRepository.createOne(user);
         } catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            }
             console.error('Error in UserService createUser: ' + error);
-            throw error;
         }
     }
 
@@ -183,5 +200,10 @@ export class AuthService {
     private async re_refreshToken(payload: { id: string; email: string }) {
         const access_Token = await this.jwtService.signAsync(payload);
         return new SuccessResponse({ access_Token });
+    }
+    async findUserByEmail(email: string): Promise<User | undefined> {
+        return this.userRepository.checkUser({
+            email,
+        });
     }
 }

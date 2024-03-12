@@ -2,8 +2,6 @@ import {
     Body,
     Controller,
     Post,
-    HttpException,
-    HttpStatus,
     ValidationPipe,
     UsePipes,
 } from '@nestjs/common';
@@ -14,11 +12,13 @@ import { ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginAminDto } from './dto/login-admin.dto';
-
+import { BaseController } from '@/common/base/base.controller';
 @ApiTags('Auth Apis')
 @Controller('auth')
-export class AuthController {
-    constructor(private readonly authService: AuthService) {}
+export class AuthController extends BaseController {
+    constructor(private readonly authService: AuthService) {
+        super();
+    }
 
     @Post('register')
     async register(@Body() registerUserDto: RegisterUserDto) {
@@ -27,21 +27,13 @@ export class AuthController {
                 registerUserDto.password,
             );
             registerUserDto.password = hashedPassword;
-
             const registeredUser =
                 await this.authService.register(registerUserDto);
             return new SuccessResponse(registeredUser);
         } catch (error) {
-            console.error(error);
-
-            // Xử lý lỗi và trả về phản hồi phù hợp
-            throw new HttpException(
-                'Đăng ký không thành công.',
-                HttpStatus.INTERNAL_SERVER_ERROR,
-            );
+            this.handleError(error);
         }
     }
-
     private async hashPassword(password: string): Promise<string> {
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);

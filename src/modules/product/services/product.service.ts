@@ -1,6 +1,6 @@
 import { Product } from './../../../database/schemas/product.schema';
 import { BaseService } from '../../../common/base/base.service';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { ProductRepository } from '../product.repository';
 import {
@@ -17,6 +17,20 @@ export class ProductService extends BaseService<Product, ProductRepository> {
     }
     async createProduct(dto: CreateProductDto) {
         try {
+            const existingName = await this.productRepository.checkName({
+                name: dto.name,
+                deletedAt: null,
+            });
+            console.log(existingName);
+            if (existingName) {
+                throw new HttpException(
+                    {
+                        status: HttpStatus.BAD_REQUEST,
+                        error: 'Email already exists',
+                    },
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
             const product: SchemaCreateDocument<Product> = {
                 ...(dto as any),
             };
@@ -72,5 +86,8 @@ export class ProductService extends BaseService<Product, ProductRepository> {
             );
             throw error;
         }
+    }
+    async findProductbyName(name: string): Promise<Product | undefined> {
+        return this.productRepository.checkName({ name });
     }
 }
