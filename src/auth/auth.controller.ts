@@ -12,7 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginAminDto } from './dto/login-admin.dto';
-import { BaseController } from '@/common/base/base.controller';
+import { BaseController } from '../common/base/base.controller';
 @ApiTags('Auth Apis')
 @Controller('auth')
 export class AuthController extends BaseController {
